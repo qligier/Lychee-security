@@ -3,7 +3,7 @@ Add an extra layer of security to Lychee
 
 ## Installation
 
-The file `SecurityPlugin.php` must be placed in the repertory `Lychee/plugins/Security/`. Then, in the table _lychee_settings_, `Security\SecurityPlugin` must be added to the _plugins_ key ([as explained here](/electerious/Lychee/blob/master/docs/Plugins.md#how-to-create-a-plugin)). The plugin is now activated.
+The file `SecurityPlugin.php` must be placed in the directory `Lychee/plugins/Security/`. Then, in the table _lychee_settings_, `Security\SecurityPlugin` must be added to the _plugins_ key ([as explained here](/electerious/Lychee/blob/master/docs/Plugins.md#how-to-create-a-plugin)). The plugin is now activated.
 
 ## Settings
 
