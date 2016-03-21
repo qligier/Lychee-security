@@ -30,6 +30,10 @@ class SecurityPlugin implements SplObserver {
 	# Time (in seconds) during which attempts are counted
 	private $resetAttemptTime = 600;
 
+	# Time (in days) during which attemps are kept in database. 0 to deactivate
+	private $timePurge = 30;
+
+
 	# Don't modify following variables
 	private $_userWhitelisted = false;
 	private $_pregLogText = '/User \(([^\]]+)\) has tried to log in from (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/U';
@@ -45,8 +49,10 @@ class SecurityPlugin implements SplObserver {
 	}
 
 	public function update(SplSubject $subject) {
-		if ('Lychee\\Modules\\Session::login:before' === $subject->action)
+		if ('Lychee\\Modules\\Session::login:before' === $subject->action) {
 			$this->checkLoginAuth();
+			$this->purgeOldLogs();
+		}
 	}
 
 	private function checkLoginAuth() {
@@ -91,7 +97,12 @@ class SecurityPlugin implements SplObserver {
 	}
 
 	private function purgeOldLogs() {
+		if (0 === $this->timePurge)
+			return;
 
+		$oldestAttemptTime = time() - $this->timePurge*3600*24;
+		$query = Database::prepare(Database::get(), 'DELETE FROM ? WHERE `time` < ? AND function="Lychee\Modules\Session::login";', array(LYCHEE_TABLE_LOG, $oldestAttemptTime));
+		Database::get()->query($query);
 	}
 
 }
