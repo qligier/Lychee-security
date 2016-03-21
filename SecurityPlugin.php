@@ -32,7 +32,7 @@ class SecurityPlugin implements SplObserver {
 
 	# Don't modify following variables
 	private $_userWhitelisted = false;
-	private $_pregLogText = '/User \[([^\]]+)\] has tried to log in from \[(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\]/U';
+	private $_pregLogText = '/User \(([^\]]+)\) has tried to log in from (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/U';
 
 
 
@@ -60,7 +60,7 @@ class SecurityPlugin implements SplObserver {
 
 		# Count the number of failed attempts per IP
 		$oldestAttemptTime = time() - $this->resetAttemptTime;
-		$query = Database::prepare(Database::get(), "SELECT text FROM ? WHERE time > ?", array(LYCHEE_TABLE_LOG, $oldestAttemptTime));
+		$query = Database::prepare(Database::get(), 'SELECT `text` FROM ? WHERE `time` > ? AND `type`="error" AND function="Lychee\Modules\Session::login";', array(LYCHEE_TABLE_LOG, $oldestAttemptTime));
 		$result = Database::get()->query($query);
 		if (false === $result)
 			return;
