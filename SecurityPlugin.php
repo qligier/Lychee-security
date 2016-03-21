@@ -8,11 +8,15 @@
 
 namespace Security;
 
+use SplObserver;
+use SplSubject;
+use Lychee\Modules\Database;
+
 if (!defined('LYCHEE'))
 	exit('Error: Direct access is not allowed!');
 
 
-class SecurityPlugin implements \SplObserver {
+class SecurityPlugin implements SplObserver {
 
 	# Array of IPs to whitelist; they will never be blocked
 	private $whitelistIps = array();
@@ -40,7 +44,7 @@ class SecurityPlugin implements \SplObserver {
 			$this->_userWhitelisted = true;
 	}
 
-	public function update(\SplSubject $subject) {
+	public function update(SplSubject $subject) {
 		if ('Lychee\\Modules\\Session::login:before' === $subject->action)
 			$this->checkLoginAuth();
 	}
@@ -56,8 +60,8 @@ class SecurityPlugin implements \SplObserver {
 
 		# Count the number of failed attempts per IP
 		$oldestAttemptTime = time() - $this->resetAttemptTime;
-		$query = \Lychee\Modules\Database::prepare(\Lychee\Modules\Database::get(), "SELECT text FROM ? WHERE time > ?", array(LYCHEE_TABLE_LOG, $oldestAttemptTime));
-		$result = \Lychee\Modules\Database::get()->query($query);
+		$query = Database::prepare(Database::get(), "SELECT text FROM ? WHERE time > ?", array(LYCHEE_TABLE_LOG, $oldestAttemptTime));
+		$result = Database::get()->query($query);
 		if (false === $result)
 			return;
 
